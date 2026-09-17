@@ -5,6 +5,7 @@ import { useRef } from "react";
 import { useGlossStore } from "@/store/glossStore";
 import { UploadZone } from "./UploadZone";
 import { PresetChips } from "./PresetChips";
+import { FineTunePanel } from "./FineTunePanel";
 import { PreviewCanvas } from "./PreviewCanvas";
 import { BeforeAfterSlider } from "./BeforeAfterSlider";
 import { ExportBar } from "./ExportBar";
@@ -43,7 +44,7 @@ export function StudioApp() {
             Make it expensive
           </h1>
           <p className="mt-2 max-w-lg text-sm text-white/45">
-            Upload a selfie, pick a look, slide before/after, export PNG. All
+            Upload a selfie, pick a look, fine-tune, beautify, export PNG. All
             processing stays in your browser.
           </p>
         </div>
@@ -51,14 +52,15 @@ export function StudioApp() {
         {!imageUrl ? (
           <UploadZone />
         ) : (
-          <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
+          <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
             <div className="space-y-4">
               <PreviewCanvas canvasRef={canvasRef} />
               <BeforeAfterSlider />
             </div>
             <aside className="space-y-5 lg:sticky lg:top-6 lg:self-start">
-              <div className="glass-panel rounded-2xl p-4 space-y-5">
+              <div className="glass-panel max-h-[min(78vh,720px)] space-y-5 overflow-y-auto overscroll-contain rounded-2xl p-4">
                 <PresetChips />
+                <FineTunePanel />
                 <ExportBar />
                 <UploadZone />
               </div>

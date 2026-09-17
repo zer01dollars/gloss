@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { applyGrade, applySoftGlow, getPreset } from "@/lib/filters";
+import {
+  applyFullGrade,
+  effectiveGrade,
+  getPreset,
+} from "@/lib/filters";
 import { useGlossStore } from "@/store/glossStore";
 
 const PREVIEW_MAX = 1200;
@@ -13,12 +17,15 @@ export function PreviewCanvas({
 }) {
   const imageUrl = useGlossStore((s) => s.imageUrl);
   const presetId = useGlossStore((s) => s.presetId);
+  const overrides = useGlossStore((s) => s.overrides);
+  const beautify = useGlossStore((s) => s.beautify);
   const compare = useGlossStore((s) => s.compare);
   const viewRef = useRef<HTMLCanvasElement>(null);
   const beforeCanvas = useRef<HTMLCanvasElement | null>(null);
   const afterCanvas = useRef<HTMLCanvasElement | null>(null);
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [gradeTick, setGradeTick] = useState(0);
   const dims = useRef({ w: 0, h: 0 });
 
   useEffect(() => {
@@ -50,11 +57,12 @@ export function PreviewCanvas({
       beforeCanvas.current = before;
 
       const src = bctx.getImageData(0, 0, w, h);
-      const preset = getPreset(useGlossStore.getState().presetId);
-      const graded = applyGrade(src, preset.params);
-      if (useGlossStore.getState().presetId === "soft-glam") {
-        applySoftGlow(graded, 0.22);
-      }
+      const state = useGlossStore.getState();
+      const params = effectiveGrade(
+        getPreset(state.presetId).params,
+        state.overrides
+      );
+      const graded = applyFullGrade(src, params, state.beautify);
       const after = document.createElement("canvas");
       after.width = w;
       after.height = h;
@@ -71,6 +79,7 @@ export function PreviewCanvas({
       }
       setReady(true);
       setBusy(false);
+      setGradeTick((t) => t + 1);
     };
     img.onerror = () => setBusy(false);
     img.src = imageUrl;
@@ -79,7 +88,7 @@ export function PreviewCanvas({
     };
   }, [imageUrl, canvasRef]);
 
-  // Re-grade when preset changes (source already loaded)
+  // Re-grade when preset / overrides / beautify change
   useEffect(() => {
     if (!beforeCanvas.current || !ready) return;
     const before = beforeCanvas.current;
@@ -87,18 +96,27 @@ export function PreviewCanvas({
     const h = before.height;
     const bctx = before.getContext("2d", { willReadFrequently: true });
     if (!bctx) return;
-    const src = bctx.getImageData(0, 0, w, h);
-    const preset = getPreset(presetId);
-    const graded = applyGrade(src, preset.params);
-    if (presetId === "soft-glam") applySoftGlow(graded, 0.22);
-    const after = document.createElement("canvas");
-    after.width = w;
-    after.height = h;
-    const actx = after.getContext("2d");
-    if (!actx) return;
-    actx.putImageData(graded, 0, 0);
-    afterCanvas.current = after;
-  }, [presetId, ready]);
+    setBusy(true);
+    // Yield so UI can paint the busy state / slider feedback
+    const handle = requestAnimationFrame(() => {
+      const src = bctx.getImageData(0, 0, w, h);
+      const params = effectiveGrade(getPreset(presetId).params, overrides);
+      const graded = applyFullGrade(src, params, beautify);
+      const after = document.createElement("canvas");
+      after.width = w;
+      after.height = h;
+      const actx = after.getContext("2d");
+      if (!actx) {
+        setBusy(false);
+        return;
+      }
+      actx.putImageData(graded, 0, 0);
+      afterCanvas.current = after;
+      setGradeTick((t) => t + 1);
+      setBusy(false);
+    });
+    return () => cancelAnimationFrame(handle);
+  }, [presetId, overrides, beautify, ready]);
 
   // Composite before/after + divider
   useEffect(() => {
@@ -112,14 +130,10 @@ export function PreviewCanvas({
     const ctx = view.getContext("2d");
     if (!ctx) return;
 
-    // compare: 0 = full after, 1 = full before
-    // left = after, right = before
     const split = Math.round((1 - compare) * w);
 
     ctx.clearRect(0, 0, w, h);
-    // Full before as base
     ctx.drawImage(before, 0, 0);
-    // After clipped to left portion
     if (split > 0) {
       ctx.save();
       ctx.beginPath();
@@ -128,11 +142,9 @@ export function PreviewCanvas({
       ctx.drawImage(after, 0, 0);
       ctx.restore();
     }
-    // Divider
     if (split > 0 && split < w) {
       ctx.fillStyle = "rgba(255, 230, 200, 0.85)";
       ctx.fillRect(split - 1, 0, 2, h);
-      // Handle knob
       ctx.beginPath();
       ctx.arc(split, h / 2, 10, 0, Math.PI * 2);
       ctx.fillStyle = "rgba(248, 228, 212, 0.95)";
@@ -141,7 +153,7 @@ export function PreviewCanvas({
       ctx.lineWidth = 1.5;
       ctx.stroke();
     }
-  }, [compare, presetId, ready, imageUrl]);
+  }, [compare, presetId, ready, imageUrl, gradeTick]);
 
   if (!imageUrl) return null;
 
@@ -149,7 +161,7 @@ export function PreviewCanvas({
     <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/40 shadow-2xl shadow-rose-950/40">
       {busy && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 text-xs uppercase tracking-[0.25em] text-white/60">
-          Loading…
+          Grading…
         </div>
       )}
       <canvas

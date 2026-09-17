@@ -6,11 +6,19 @@ const LOOKS = [
   { name: "Golden Hour", vibe: "Honey warmth · dreamy haze" },
   { name: "Film", vibe: "Analog grain · faded blacks" },
   { name: "Clean", vibe: "Editorial crisp · bright clarity" },
+  { name: "Midnight", vibe: "Ink shadows · cool blue mood" },
+  { name: "Peach Fizz", vibe: "Peachy sparkle · soft fizz" },
+  { name: "Noir", vibe: "Deep blacks · cinematic drama" },
+  { name: "Ice", vibe: "Frosted cool · glassy clarity" },
+  { name: "Vintage Fade", vibe: "Matte blacks · old-print grain" },
+  { name: "Neon Pop", vibe: "Electric color · nightlife punch" },
+  { name: "Warm Portrait", vibe: "Flattering warmth · soft skin" },
+  { name: "B&W Soft", vibe: "Gentle mono · creamy midtones" },
 ];
 
 const STEPS = [
   { n: "01", t: "Upload", d: "Drop one clear selfie." },
-  { n: "02", t: "Gloss", d: "Tap a preset. Watch it transform." },
+  { n: "02", t: "Gloss", d: "Pick a look. Fine-tune. Beautify." },
   { n: "03", t: "Compare", d: "Slide before / after." },
   { n: "04", t: "Export", d: "Download a PNG. Done." },
 ];

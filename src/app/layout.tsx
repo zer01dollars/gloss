@@ -21,7 +21,7 @@ const instrument = Instrument_Serif({
 export const metadata: Metadata = {
   title: "Gloss — Make any selfie look expensive",
   description:
-    "Gloss applies premium color grades to your selfies in the browser. Soft Glam, Club Flash, Golden Hour, and more. Made By Zer01 — Artificially Intelligent, Digitally Enhanced.",
+    "Gloss applies premium color grades to your selfies in the browser. 13 looks, fine-tune sliders, and Beautify — Soft Glam to Neon Pop. Made By Zer01 — Artificially Intelligent, Digitally Enhanced.",
   keywords: ["selfie", "filter", "beauty", "gloss", "photo editor", "Zer01"],
 };
 

@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import {
-  applyGrade,
-  applySoftGlow,
+  applyFullGrade,
+  effectiveGrade,
   getPreset,
 } from "@/lib/filters";
 import { useGlossStore } from "@/store/glossStore";
@@ -14,6 +14,8 @@ const PRO_MAX = 4096;
 export function ExportBar() {
   const imageUrl = useGlossStore((s) => s.imageUrl);
   const presetId = useGlossStore((s) => s.presetId);
+  const overrides = useGlossStore((s) => s.overrides);
+  const beautify = useGlossStore((s) => s.beautify);
   const proUnlocked = useGlossStore((s) => s.proUnlocked);
   const unlockPro = useGlossStore((s) => s.unlockPro);
   const [exporting, setExporting] = useState(false);
@@ -37,9 +39,8 @@ export function ExportBar() {
       if (!ctx) return;
       ctx.drawImage(img, 0, 0, w, h);
       const src = ctx.getImageData(0, 0, w, h);
-      const preset = getPreset(presetId);
-      const graded = applyGrade(src, preset.params);
-      if (presetId === "soft-glam") applySoftGlow(graded, 0.22);
+      const params = effectiveGrade(getPreset(presetId).params, overrides);
+      const graded = applyFullGrade(src, params, beautify);
       ctx.putImageData(graded, 0, 0);
 
       if (!proUnlocked) {
