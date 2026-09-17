@@ -19,7 +19,7 @@ export function PresetChips() {
         </p>
       </div>
       {/* Chips scroll in place so Beautify + Fine-tune stay on-screen */}
-      <div className="max-h-32 overflow-y-auto overscroll-contain pr-0.5 [-webkit-overflow-scrolling:touch] sm:max-h-36">
+      <div className="max-h-40 overflow-y-auto overscroll-contain pr-0.5 [-webkit-overflow-scrolling:touch] sm:max-h-44">
         <div className="flex flex-wrap gap-1.5">
           {PRESETS.map((p) => {
             const on = p.id === presetId;
