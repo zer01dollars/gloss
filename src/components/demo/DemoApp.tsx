@@ -8,10 +8,10 @@ import {
   getPreset,
   type PresetId,
 } from "@/lib/filters";
+import { BeautifyBlock } from "@/components/studio/BeautifyBlock";
 
 const SAMPLE_SRC = "/demo/sample.jpg";
 const PREVIEW_MAX = 1100;
-const DEMO_BEAUTIFY = 0.4;
 
 /** Featured looks on the marketing demo (others live in Studio). */
 const DEMO_LOOKS: PresetId[] = [
@@ -32,6 +32,7 @@ export function DemoApp() {
   const dims = useRef({ w: 0, h: 0 });
 
   const [presetId, setPresetId] = useState<PresetId>("soft-glam");
+  const [beautify, setBeautify] = useState(0.4);
   const [compare, setCompare] = useState(0.48);
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(true);
@@ -102,7 +103,7 @@ export function DemoApp() {
 
         const src = bctx.getImageData(0, 0, w, h);
         const params = getPreset("soft-glam").params;
-        const graded = applyFullGrade(src, params, DEMO_BEAUTIFY);
+        const graded = applyFullGrade(src, params, 0.4);
         const after = document.createElement("canvas");
         after.width = w;
         after.height = h;
@@ -135,7 +136,7 @@ export function DemoApp() {
     };
   }, []);
 
-  // Re-grade when look changes
+  // Re-grade when look or beautify changes
   useEffect(() => {
     if (!beforeRef.current || !ready) return;
     const before = beforeRef.current;
@@ -147,7 +148,7 @@ export function DemoApp() {
     const handle = requestAnimationFrame(() => {
       const src = bctx.getImageData(0, 0, w, h);
       const params = getPreset(presetId).params;
-      const graded = applyFullGrade(src, params, DEMO_BEAUTIFY);
+      const graded = applyFullGrade(src, params, beautify);
       const after = document.createElement("canvas");
       after.width = w;
       after.height = h;
@@ -162,7 +163,7 @@ export function DemoApp() {
       setBusy(false);
     });
     return () => cancelAnimationFrame(handle);
-  }, [presetId, ready]);
+  }, [presetId, beautify, ready]);
 
   // Composite before/after + divider
   useEffect(() => {
@@ -272,32 +273,36 @@ export function DemoApp() {
 
           <aside className="space-y-5 lg:sticky lg:top-6">
             <div className="glass-panel space-y-5 rounded-2xl p-5">
+              <BeautifyBlock value={beautify} onChange={setBeautify} />
+
               <div>
                 <p className="text-[10px] uppercase tracking-[0.28em] text-white/35">
                   Try a look
                 </p>
                 <p className="mt-2 text-sm text-white/45">{active.blurb}</p>
               </div>
-              <div className="flex flex-wrap gap-2">
-                {DEMO_LOOKS.map((id) => {
-                  const p = getPreset(id);
-                  const on = id === presetId;
-                  return (
-                    <button
-                      key={id}
-                      type="button"
-                      onClick={() => setPresetId(id)}
-                      title={p.blurb}
-                      className={`rounded-full px-3.5 py-2 text-xs font-medium transition ${
-                        on
-                          ? "bg-gradient-to-r from-rose-200 via-amber-100 to-rose-200 text-[#1a1010] shadow-lg shadow-rose-900/30"
-                          : "border border-white/12 bg-white/[0.04] text-white/70 hover:border-white/25 hover:text-white"
-                      }`}
-                    >
-                      {p.label}
-                    </button>
-                  );
-                })}
+              <div className="max-h-40 overflow-y-auto overscroll-contain pr-0.5">
+                <div className="flex flex-wrap gap-2">
+                  {DEMO_LOOKS.map((id) => {
+                    const p = getPreset(id);
+                    const on = id === presetId;
+                    return (
+                      <button
+                        key={id}
+                        type="button"
+                        onClick={() => setPresetId(id)}
+                        title={p.blurb}
+                        className={`rounded-full px-3.5 py-2 text-xs font-medium transition ${
+                          on
+                            ? "bg-gradient-to-r from-rose-200 via-amber-100 to-rose-200 text-[#1a1010] shadow-lg shadow-rose-900/30"
+                            : "border border-white/12 bg-white/[0.04] text-white/70 hover:border-white/25 hover:text-white"
+                        }`}
+                      >
+                        {p.label}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               <div className="border-t border-white/8 pt-5">

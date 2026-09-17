@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRef } from "react";
 import { useGlossStore } from "@/store/glossStore";
 import { UploadZone } from "./UploadZone";
+import { BeautifyBlock } from "./BeautifyBlock";
 import { PresetChips } from "./PresetChips";
 import { FineTunePanel } from "./FineTunePanel";
 import { PreviewCanvas } from "./PreviewCanvas";
@@ -12,6 +13,8 @@ import { ExportBar } from "./ExportBar";
 
 export function StudioApp() {
   const imageUrl = useGlossStore((s) => s.imageUrl);
+  const beautify = useGlossStore((s) => s.beautify);
+  const setBeautify = useGlossStore((s) => s.setBeautify);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   return (
@@ -64,11 +67,16 @@ export function StudioApp() {
               <BeforeAfterSlider />
             </div>
             <aside className="space-y-5 lg:sticky lg:top-6 lg:self-start">
-              <div className="glass-panel max-h-[min(78vh,720px)] space-y-5 overflow-y-auto overscroll-contain rounded-2xl p-4">
+              <div className="glass-panel flex max-h-[min(78vh,720px)] flex-col gap-4 overflow-hidden rounded-2xl p-4">
+                {/* Beautify first — visible without scrolling past presets */}
+                <BeautifyBlock value={beautify} onChange={setBeautify} />
                 <PresetChips />
-                <FineTunePanel />
-                <ExportBar />
-                <UploadZone />
+                {/* Fine-tune + export scroll together below chips */}
+                <div className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain pr-0.5">
+                  <FineTunePanel />
+                  <ExportBar />
+                  <UploadZone />
+                </div>
               </div>
               <p className="text-center text-[10px] uppercase tracking-[0.28em] text-white/25">
                 Made By Zer01
