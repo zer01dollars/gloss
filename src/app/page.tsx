@@ -40,12 +40,18 @@ export default function HomePage() {
           </span>
         </div>
         <nav className="flex items-center gap-3">
+          <Link href="/demo" className="hidden text-xs text-white/50 hover:text-white/80 sm:inline">
+            Try demo
+          </Link>
           <a href="#looks" className="hidden text-xs text-white/50 hover:text-white/80 sm:inline">
             Looks
           </a>
           <a href="#pricing" className="hidden text-xs text-white/50 hover:text-white/80 sm:inline">
             Pricing
           </a>
+          <Link href="/demo" className="btn-ghost !py-2.5 !px-4 text-xs">
+            Try demo
+          </Link>
           <Link href="/studio" className="btn-gold !py-2.5 !px-5 text-xs">
             Open Studio
           </Link>
@@ -73,10 +79,13 @@ export default function HomePage() {
           Club Flash when you want drama. Pure canvas magic. No app install.
         </p>
         <div className="mt-10 flex flex-wrap items-center gap-4">
-          <Link href="/studio" className="btn-gold">
+          <Link href="/demo" className="btn-gold">
+            Try demo
+          </Link>
+          <Link href="/studio" className="btn-ghost">
             Gloss my selfie
           </Link>
-          <a href="#how" className="btn-ghost">
+          <a href="#how" className="text-xs text-white/40 hover:text-white/70">
             How it works
           </a>
         </div>
@@ -131,7 +140,7 @@ export default function HomePage() {
       <section id="looks" className="relative z-10 py-20">
         <div className="mx-auto max-w-6xl px-6">
           <p className="text-[11px] uppercase tracking-[0.3em] text-amber-200/50">Looks</p>
-          <h2 className="mt-3 font-serif text-4xl text-white md:text-5xl">Five premium grades</h2>
+          <h2 className="mt-3 font-serif text-4xl text-white md:text-5xl">Thirteen premium grades</h2>
           <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {LOOKS.map((l) => (
               <div
@@ -155,7 +164,7 @@ export default function HomePage() {
               <div className="text-xs uppercase tracking-[0.25em] text-white/40">Free</div>
               <div className="mt-4 font-serif text-5xl text-white">$0</div>
               <ul className="mt-6 space-y-2 text-sm text-white/50">
-                <li>· All five looks</li>
+                <li>· All looks</li>
                 <li>· Before / after slider</li>
                 <li>· PNG export with Gloss watermark</li>
               </ul>
@@ -190,9 +199,14 @@ export default function HomePage() {
           <p className="mx-auto mt-4 max-w-md text-white/50">
             Open the studio. Soft Glam is waiting. No account for the demo.
           </p>
-          <Link href="/studio" className="btn-gold mt-8 inline-flex">
-            Enter Gloss Studio
-          </Link>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <Link href="/demo" className="btn-gold inline-flex">
+              Try demo
+            </Link>
+            <Link href="/studio" className="btn-ghost inline-flex">
+              Enter Gloss Studio
+            </Link>
+          </div>
         </div>
       </section>
 

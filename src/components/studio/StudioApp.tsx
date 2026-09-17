@@ -30,6 +30,12 @@ export function StudioApp() {
         </Link>
         <div className="flex items-center gap-3">
           <Link
+            href="/demo"
+            className="text-xs text-white/40 transition hover:text-white/70"
+          >
+            Demo
+          </Link>
+          <Link
             href="/"
             className="text-xs text-white/40 transition hover:text-white/70"
           >
